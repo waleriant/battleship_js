@@ -41,7 +41,7 @@ function buildBattleshipStructure(x1, y1, x2, y2) {
 class Battleship {
 	constructor(x1, y1, x2, y2) {
 		this.structure = buildBattleshipStructure(x1, y1, x2, y2);
-		this.fixed = false;
+		this.placed = false;
 		this.sunk = false;
 	}
 		
@@ -65,8 +65,20 @@ class Battleship {
 		return this.structure.length;
 	}
 	
+	getStructure() {
+		return this.structure;
+	}
+		
+	// --------------------------------------------------------------------------------------------------
+	// ----------------------------------------- SET UP METHODS -----------------------------------------
+	// --------------------------------------------------------------------------------------------------
+	
+	isPlaced() {
+		return this.placed;
+	}
+	
 	moveLeft() {
-		if (this.x1() - 1 < 1 || this.x2() - 1 < 1 || this.fixed == true) {
+		if (this.x1() - 1 < 1 || this.x2() - 1 < 1 || this.placed) {
 			return false;
 		}
 		this.structure = buildBattleshipStructure(this.x1() - 1, this.y1(), this.x2() - 1, this.y2());
@@ -74,7 +86,7 @@ class Battleship {
 	}
 		
 	moveRight() {
-		if (this.x1() + 1 > 10 || this.x2() + 1 > 10 || this.fixed == true) {
+		if (this.x1() + 1 > 10 || this.x2() + 1 > 10 || this.placed) {
 			return false;
 		}
 		this.structure = buildBattleshipStructure(this.x1() + 1, this.y1(), this.x2() + 1, this.y2());
@@ -82,7 +94,7 @@ class Battleship {
 	}
 	
 	moveDown() {
-		if (this.y1() + 1 > 10 || this.y2() + 1 > 10 || this.fixed == true) {
+		if (this.y1() + 1 > 10 || this.y2() + 1 > 10 || this.placed) {
 			return false;
 		}
 		this.structure = buildBattleshipStructure(this.x1(), this.y1() + 1, this.x2(), this.y2() + 1);
@@ -90,7 +102,7 @@ class Battleship {
 	}	
 	
 	moveUp() {
-		if (this.y1() - 1 < 1 || this.y2() - 1 < 1 || this.fixed == true) {
+		if (this.y1() - 1 < 1 || this.y2() - 1 < 1 || this.placed) {
 			return false;
 		}
 		this.structure = buildBattleshipStructure(this.x1(), this.y1() - 1, this.x2(), this.y2() - 1);
@@ -98,7 +110,7 @@ class Battleship {
 	}
 	
 	rotate() {
-		if  (this.fixed == true) {
+		if  (this.placed) {
 				return false;
 		}
 		let center = Math.round(this.length()/2);
@@ -133,20 +145,37 @@ class Battleship {
 		return true;
 	}
 	
-	// fixes the battleship, so its position can no longer be modified
-	
-	fix() {
-		this.fixed = true;
+	assignStructure(my_structure) {
+		this.structure = my_structure;
 	}
 	
-	// sets the piece i of the battleship's structure as hit
+	// fixes the battleship, so its position can no longer be modified
 	
-	hit(i) {
-		if (i >= 0 && i < this.length()) {
-			this.structure[i][2] = false;
-			return true;
+	place() {
+		this.placed = true;
+	}
+	
+	// --------------------------------------------------------------------------------------------------
+	// ---------------------------------------- IN-GAME METHODS -----------------------------------------
+	// --------------------------------------------------------------------------------------------------
+
+	// checks if the enemy managed to hit the battleship
+	// updates accordingly its status
+	
+	isHit(x, y) {
+		for (let piece of this.structure) {
+			if (piece[0] == x && piece[1] == y && piece[2]) {
+				piece[2] = false;
+				for (const p of this.structure) {
+					if (p[2]) {
+						return "Hit.";
+					}
+				}
+				this.sink()
+				return "Sunk!";
+			}
 		}
-	return false;
+		return "Nothing.";
 	}
 	
 	// sets the battleship as sunk
@@ -154,31 +183,14 @@ class Battleship {
 	sink() {
 		this.sunk = true;
 	}
-	
-	// if sunk == false, isSunk() checks each piece of the battleship's structure if needed
-	// if each piece is damaged (i.e. piece[2] == false), the battleship is set as sunk and isSunk() returns "true"
-	
-	isSunk() {
-		if (this.sunk == true) {
-			return true;
-		} else {
-			for (const piece of this.structure) {
-				if (piece[2] == true) {
-					return false;
-				}
-			}
-			this.sink();
-			return true;
-		}
-	}
 }
 
 // checks if two battleships' structures overlap
 // if so: returns an array of the overlapping pieces
-// if not: returns []
+// if not: returns an empty array
 
-function checkOverlap(b1, b2) {
-	let overlappingCells = [];
+function checkIfBattleshipsOverlap(b1, b2) {
+	let overlappingCells = new Array();
 	
 	for (const piece1 of b1.structure) {
 		for (const piece2 of b2.structure) {

@@ -15,7 +15,7 @@ class Targets {
 	}
 	
 	check(x, y) {
-		return this.field[x-1, y-1];
+		return this.field[x-1, y-1][0];
 	}
 
 	tick(x, y) {
