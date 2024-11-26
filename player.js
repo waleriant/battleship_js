@@ -1,5 +1,6 @@
 class Player {
 	constructor() {
+		this.name = "Player";
 		this.targets = new Targets();
 		this.arrayBattleships = new Array();
 		
@@ -19,6 +20,10 @@ class Player {
 		this.arrayBattleships.push(battleship5);
 	}
 	
+	getName() {
+		return this.name;
+	}
+	
 	getBattleshipByNb(nb) {
 		if (nb >= 1 && nb <= 5) {
 			return this.arrayBattleships[nb-1];
@@ -35,9 +40,7 @@ class Player {
 	
 	nbOfBattleshipToBePlaced() {
 		for (let i = 1; i <= 5; i++) {
-			if (this.getBattleshipByNb(i).isPlaced() == false) {
-				return i;
-			}
+			if (this.getBattleshipByNb(i).isPlaced() == false) return i;
 		}
 		return 0;
 	}
@@ -53,37 +56,27 @@ class Player {
 	// the following functions move and rotate the battleship to be placed
 	
 	moveLeftCurrent() {
-		if (this.isReadyToPlay() == false) {
-			return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveLeft();
-		}
+		if (this.isReadyToPlay() == false) return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveLeft();
 		return false;
 	}
 		
 	moveRightCurrent() {
-		if (this.isReadyToPlay() == false) {
-			return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveRight();
-		}
+		if (this.isReadyToPlay() == false) return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveRight();
 		return false;
 	}
 	
 	moveDownCurrent() {
-		if (this.isReadyToPlay() == false) {
-			return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveDown();
-		}
+		if (this.isReadyToPlay() == false) return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveDown();
 		return false;
 	}	
 	
 	moveUpCurrent() {
-		if (this.isReadyToPlay() == false) {
-			return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveUp();
-		}
+		if (this.isReadyToPlay() == false) return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].moveUp();
 		return false;
 	}
 	
 	rotateCurrent() {
-		if (this.isReadyToPlay() == false) {
-			return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].rotate();
-		}
+		if (this.isReadyToPlay() == false) return this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].rotate();
 		return false;
 	}	
 	
@@ -92,9 +85,7 @@ class Player {
 	currentCanBePlaced() {
 		let nb = this.nbOfBattleshipToBePlaced();
 		for (let i = 1; i < nb; i++) {
-			if (checkIfBattleshipsOverlap(this.getBattleshipByNb(i), this.getBattleshipByNb(nb)).length != 0) {
-				return false;
-			}
+			if (checkIfBattleshipsOverlap(this.getBattleshipByNb(i), this.getBattleshipByNb(nb)).length != 0) return false;
 		}
 		return true;
 	}
@@ -103,8 +94,9 @@ class Player {
 		if (this.currentCanBePlaced()) {
 			this.arrayBattleships[this.nbOfBattleshipToBePlaced()-1].place();
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 
 	// --------------------------------------------------------------------------------------------------
@@ -116,27 +108,21 @@ class Player {
 	
 	fleetStats() {
 		let myArr = new Array();
-		for (const battleship of this.arrayBattleships) {
-			myArr.push(!(battleship.isSunk()));
-		}
+		for (const battleship of this.arrayBattleships) myArr.push(!(battleship.isSunk()));
 		return myArr;
 	}
 	
 	isFleetHit(x, y) {
 		for (const battleship of this.arrayBattleships) {
-			let msg = battleship.isHit(x, y);
-			if (msg != "Nothing.") {
-				 return msg;
-			}
+			let notifEvent = battleship.isHit(x, y);
+			if (notifEvent != "nothing happened.") return notifEvent;
 		}
-		return "Nothing.";
+		return "nothing happened.";
 	}
 	
 	isDead() {
 		for (const battleship of this.arrayBattleships) {
-			if (battleship.isSunk() == false) {
-				return false;
-			}			
+			if (battleship.isSunk() == false) return false;	
 		}
 		return true;
 	}
@@ -192,9 +178,7 @@ class Computer extends Player {
 	}
 	
 	placeCurrentRandomly() {
-		if (this.isReadyToPlay()) {
-			return false;
-		}
+		if (this.isReadyToPlay()) return false;
 		do {
 			let my_length = this.getBattleshipToBePlaced().length();
 			let x1;
@@ -219,6 +203,16 @@ class Computer extends Player {
 		return true;
 	}
 	
+	placeAllRandomly() {
+		if (this.isReadyToPlay()) {
+			return false;
+		} else {
+			this.placeCurrentRandomly();
+			this.placeAllRandomly();
+			return true;
+		}
+	}
+			
 	attack() {
 		let x;
 		let y;
