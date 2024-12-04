@@ -15,14 +15,33 @@ class Targets {
 	}
 	
 	check(x, y) {
-		return this.field[x-1, y-1][0];
+		return this.field[x - 1][y - 1];
 	}
 
 	tick(x, y) {
-		this.field(x-1, y-1) = "o";
+		this.field[x - 1][y - 1] = "o";
 	}
 	
 	hit(x, y) {
-		this.field(x-1, y-1) = "x";
+		this.field[x - 1][y - 1] = "x";
+	}
+
+	/* returns an array containing all targeted cells until now
+	   => [[2, 5, "x"],
+	       [2, 10, "o"],
+		   [1, 3, "o"],
+		   [7, 1, "x"]]
+	*/
+
+	getArrayTickOrHit() {
+		let myArr = [];
+		for (let i = 0; i <= 9; i++) {
+			for (let j = 0; j <= 9; j++) {
+				if (this.field[i][j] != "_") {
+					myArr.push([i + 1, j + 1, this.field[i][j]])
+				}
+			}
+		}
+		return myArr;
 	}
 }

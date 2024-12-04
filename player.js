@@ -31,9 +31,8 @@ class Player {
 			return [];
 		}
 	}
-	// --------------------------------------------------------------------------------------------------
+
 	// ----------------------------------------- SET UP METHODS -----------------------------------------
-	// --------------------------------------------------------------------------------------------------
 	
 	// returns the number of the battleship to be placed (1, 2, 3, 4, 5)
 	// returns 0 if there is no more battleship to place
@@ -47,6 +46,26 @@ class Player {
 	
 	getBattleshipToBePlaced() {
 		return this.getBattleshipByNb(this.nbOfBattleshipToBePlaced());
+	}
+
+	nbOfPlacedBattleships() {
+		let nb = 0;
+		for (let i = 1; i <= 5; i++) {
+			if (this.getBattleshipByNb(i).isPlaced()) i++;
+		}
+		return nb;
+	}
+
+	getAllPlacedBattleships() {
+		let my_arrayBattleships = []
+		for (let i = 1; i <= 5; i++) {
+			if (this.getBattleshipByNb(i).isPlaced()) {
+				my_arrayBattleships.push(this.getBattleshipByNb(i));
+			} else {
+				return my_arrayBattleships;
+			}				
+		}
+		return my_arrayBattleships;
 	}
 	
 	isReadyToPlay() {
@@ -99,9 +118,7 @@ class Player {
 		}
 	}
 
-	// --------------------------------------------------------------------------------------------------
 	// ----------------------------- IN-GAME METHODS RELATED TO ENEMY FIRE ------------------------------
-	// --------------------------------------------------------------------------------------------------
 
 	// returns [bool1, bool2, bool3, bool4, bool5]
 	// where boolx == true if the battleship x is still OK
@@ -127,9 +144,7 @@ class Player {
 		return true;
 	}
 	
-	// --------------------------------------------------------------------------------------------------
 	// ------------------------------ IN-GAME METHODS RELATED TO OWN FIRE -------------------------------
-	// --------------------------------------------------------------------------------------------------
 
 	// checks if the player already attacked (x, y)
 	
@@ -156,11 +171,12 @@ class Player {
 			return true;
 		}
 	}
+	getArrayTickOrHit() {
+		return this.targets.getArrayTickOrHit();
+	}
 }
 
-// --------------------------------------------------------------------------------------------------
 // ---------------------------------------- COMPUTER LOGIC ------------------------------------------
-// --------------------------------------------------------------------------------------------------
 
 // returns an integer between 1 and max
 
@@ -220,7 +236,7 @@ class Computer extends Player {
 			x = getRandomIndex(10);
 			y = getRandomIndex(10);
 		} while (this.targets.check(x, y) != "_");
-		let couple = [x, y];
-		return couple;
+		let coords = [x, y];
+		return coords;
 	}
 }

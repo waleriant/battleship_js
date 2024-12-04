@@ -68,15 +68,17 @@ class Battleship {
 	getStructure() {
 		return this.structure;
 	}
-		
-	// --------------------------------------------------------------------------------------------------
+	
 	// ----------------------------------------- SET UP METHODS -----------------------------------------
-	// --------------------------------------------------------------------------------------------------
 	
 	isPlaced() {
 		return this.placed;
 	}
-	
+
+	isSunk() {
+		return this.sunk;
+	}
+
 	moveLeft() {
 		if (this.x1() - 1 < 1 || this.x2() - 1 < 1 || this.placed) return false;
 		this.structure = buildBattleshipStructure(this.x1() - 1, this.y1(), this.x2() - 1, this.y2());
@@ -145,9 +147,7 @@ class Battleship {
 		this.placed = true;
 	}
 	
-	// --------------------------------------------------------------------------------------------------
 	// ---------------------------------------- IN-GAME METHODS -----------------------------------------
-	// --------------------------------------------------------------------------------------------------
 
 	// checks if the enemy managed to hit the battleship
 	// updates accordingly its status
